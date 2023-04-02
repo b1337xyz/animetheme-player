@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from optparse import OptionParser
 import requests
 import subprocess as sp
 
@@ -29,8 +30,31 @@ def fzf(args: list) -> str:
         pass
 
 
-def play_anime_theme():
-    animetitle = input("Give an anime title: ").strip()
+def parse_arguments():
+    parser = OptionParser()
+    parser.add_option('--no-video', action='store_true')
+    return parser.parse_args()
+
+
+def play(pl, o):
+    # TODO:
+    #   - add support to other players
+    #   - add support to mpv ipc
+
+    opts = [f'--playlist={pl}']
+    if o.no_video:
+        opts += ['--no-video']
+    sp.run(['mpv'] + opts)
+
+
+def main():
+    opts, args = parse_arguments()
+
+    if args:
+        animetitle = ' '.join(args)
+    else:
+        animetitle = input("Give an anime title: ").strip()
+
     while True:
         themetype = input("Opening or Ending [OP/ED]: ").strip().upper()
         if themetype in ['OP', 'ED']:
@@ -77,19 +101,10 @@ def play_anime_theme():
         videos += available_themes[title]
 
     if videos:
-        sp.run(["mpv"] + videos)
-    else:
-        askuser = fzf(["Play another theme from this anime",
-                       "Search for another anime",
-                       "Exit"])
-
-        if askuser[0] == "Play another theme from this anime":
-            pass
-        elif askuser[0] == "Search for another anime":
-            play_anime_theme()
-        else:
-            quit()
+        playlist = '/tmp/animethemes.links'
+        open(playlist, 'w').write('\n'.join(videos))
+        play(playlist, opts)
 
 
 if __name__ == "__main__":
-    play_anime_theme()
+    main()
