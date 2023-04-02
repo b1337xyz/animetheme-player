@@ -6,7 +6,7 @@ import subprocess as sp
 
 UA = "Mozilla/5.0 (compatible; MSIE 8.0; Windows 98; Win 9x 4.90; Trident/4.0)"
 MAL = 'https://myanimelist.net/search/prefix.json?type=anime&keyword={}&v=1'
-API = 'https://api.animethemes.moe/anime?include=animesynonyms,series,animethemes,animethemes.animethemeentries.videos,animethemes.song,animethemes.song.artists,studios,images,resources&fields%5Banime%5D=id,name,slug,year&filter%5Bhas%5D=resources&filter%5Bsite%5D=myanimelist&filter%5Bexternal_id%5D={}'  # noqa: E501
+API = 'https://api.animethemes.moe/anime?include=animethemes,animethemes.animethemeentries.videos,animethemes.song&fields%5Banime%5D=id,name,slug,year&filter%5Bhas%5D=resources&filter%5Bsite%5D=myanimelist&filter%5Bexternal_id%5D={}'  # noqa: E501
 FZF_OPTS = [
     '-m',
     '--height', '20%',
@@ -28,7 +28,7 @@ def fzf(args: list) -> str:
             return None
         return [i for i in out[0].split('\n') if i]
     except KeyboardInterrupt:
-        pass
+        return ''
 
 
 def parse_arguments():
