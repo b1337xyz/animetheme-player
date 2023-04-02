@@ -9,10 +9,11 @@ This is a Python script that lets you search for an anime and play its opening o
 - mpv media player (must be installed separately)
 - install fzf as well (depending on your OS)
 
-## Usage
+## Setup 
 
 ```
 git clone https://github.com/b1337xyz/animetheme-player.git
+python3 -m pip install --user -r requirements.txt
 python3 animetheme.py
 ```
 
