@@ -12,6 +12,7 @@ FZF_OPTS = [
     '--height', '20%',
     '--bind', 'ctrl-a:select-all'
 ]
+PLAYER = 'mpv'
 
 
 def fzf(args: list) -> str:
@@ -33,6 +34,10 @@ def fzf(args: list) -> str:
 def parse_arguments():
     parser = OptionParser()
     parser.add_option('--no-video', action='store_true')
+    parser.add_option('-a', '--all', action='store_true',
+                      help='Play all tracks')
+    parser.add_option('-b', '--both', action='store_true',
+                      help='Play OP and ED')
     return parser.parse_args()
 
 
@@ -44,7 +49,7 @@ def play(pl, o):
     opts = [f'--playlist={pl}']
     if o.no_video:
         opts += ['--no-video']
-    sp.run(['mpv'] + opts)
+    sp.run([PLAYER] + opts)
 
 
 def main():
@@ -55,7 +60,8 @@ def main():
     else:
         animetitle = input("Give an anime title: ").strip()
 
-    while True:
+    themetype = ''
+    while not opts.both:
         themetype = input("Opening or Ending [OP/ED]: ").strip().upper()
         if themetype in ['OP', 'ED']:
             break
@@ -88,7 +94,7 @@ def main():
     animethemes = data["anime"][0]["animethemes"]
     available_themes = dict()
     for theme in animethemes:
-        if theme['type'] != themetype:
+        if theme['type'] != themetype and not opts.both:
             continue
         title = theme['song']['title']
         available_themes[title] = []
@@ -97,7 +103,8 @@ def main():
                 available_themes[title].append(video['link'])
 
     videos = []
-    for title in fzf(available_themes.keys()):
+    keys = available_themes.keys()
+    for title in keys if opts.all else fzf(keys):
         videos += available_themes[title]
 
     if videos:
